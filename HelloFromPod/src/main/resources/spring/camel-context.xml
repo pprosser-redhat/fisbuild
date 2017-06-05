@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <!-- Define a traditional camel context here -->
+    <bean
+        class="org.apache.camel.component.servlet.CamelHttpTransportServlet" id="camelHttpTransportServlet"/>
+    <bean
+        class="org.springframework.boot.web.servlet.ServletRegistrationBean" id="servlet">
+        <property name="name" value="CamelServlet"/>
+        <property name="servlet" ref="camelHttpTransportServlet"/>
+        <property name="urlMappings" value="/demos/*"/>
+    </bean>
+    <!--  <bean class="fis.HelloFromPod.Hello" id="helloMessage"/> -->
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <endpoint id="transform" uri="dozer:transform?sourceModel=java.lang.String&amp;targetModel=fis.HelloFromPod.Hello&amp;mappingFile=transformation.xml"/>
+        <rest path="/hello">
+            <get outType="com.redhat.myfispipeline.Accounts" uri="pod">
+                <to uri="direct:hello"/>
+            </get>
+        </rest>
+        <route id="hello-pods">
+            <from id="Hello" uri="direct:hello"/>
+            <convertBodyTo id="_convertBodyTo1" type="String"/>
+            <bean beanType="fis.HelloFromPod.Hello" cache="false"
+                id="GetMessage" method="getMessage"/>
+            <log id="route-log" message=">>> ${body}"/>
+        </route>
+    </camelContext>
+</beans>

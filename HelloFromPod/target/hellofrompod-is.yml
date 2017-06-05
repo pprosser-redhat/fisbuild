@@ -1,0 +1,15 @@
+---
+apiVersion: "v1"
+kind: "List"
+items:
+- apiVersion: "v1"
+  kind: "ImageStream"
+  metadata:
+    name: "hellofrompod"
+  spec:
+    tags:
+    - from:
+        kind: "ImageStreamImage"
+        name: "hellofrompod@sha256:99ce0ff991fe6efce0367fe43a67e0c571b81fc4b9014f08952f8784ec8e2ee4"
+        namespace: "fisdemo"
+      name: "latest"
