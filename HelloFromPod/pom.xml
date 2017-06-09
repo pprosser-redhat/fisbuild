@@ -8,11 +8,6 @@
   <name>Fabric8 :: Hello Pods :: Spring-Boot :: Camel XML</name>
   <description>Spring Boot example running a Camel route defined in XML</description>
   
-  
-  
-  
-  
-  
   <properties>
     <spring-boot.version>1.4.1.RELEASE</spring-boot.version>
     <fabric8.version>2.2.170.redhat-000010</fabric8.version>
@@ -103,11 +98,19 @@
       <id>redhat-ga-repository</id>
       <url>https://maven.repository.redhat.com/ga</url>
     </repository>
+    <repository>
+      <id>Red Hat EA repository</id>
+      <url>https://maven.repository.redhat.com/earlyaccess/all</url>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>redhat-ga-repository</id>
       <url>https://maven.repository.redhat.com/ga</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>Red Hat EA repository</id>
+      <url>https://maven.repository.redhat.com/earlyaccess/all</url>
     </pluginRepository>
   </pluginRepositories>
   <build>
