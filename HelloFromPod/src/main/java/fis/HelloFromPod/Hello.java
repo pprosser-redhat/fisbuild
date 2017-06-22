@@ -9,7 +9,7 @@ public class Hello {
 	public String getMessage() {
 
 		try {
-			message = "Hello from POD Changed: " + InetAddress.getLocalHost().getHostName();
+			message = "Hello from POD : " + InetAddress.getLocalHost().getHostName();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
