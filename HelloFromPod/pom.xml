@@ -117,10 +117,10 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-    <repository>
+    <!--   <repository>
       <id>Red-Hat-EA-repository</id>
       <url>https://maven.repository.redhat.com/earlyaccess/all</url>
-    </repository>
+    </repository> -->
   </repositories>
   <pluginRepositories>
     <pluginRepository>
@@ -145,10 +145,10 @@
         <enabled>false</enabled>
       </snapshots>
     </pluginRepository>
-    <pluginRepository>
+    <!--  <pluginRepository>
       <id>Red-Hat-EA-repository</id>
       <url>https://maven.repository.redhat.com/earlyaccess/all</url>
-    </pluginRepository>
+    </pluginRepository> -->
   </pluginRepositories>
   <build>
     <defaultGoal>spring-boot:run</defaultGoal>
