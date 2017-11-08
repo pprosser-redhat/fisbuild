@@ -100,7 +100,7 @@
       <url>https://maven.repository.redhat.com/ga</url>
     </repository>
     <repository>
-      <id>Red Hat EA repository</id>
+      <id>Red-Hat-EA-repository</id>
       <url>https://maven.repository.redhat.com/earlyaccess/all</url>
     </repository>
   </repositories>
@@ -110,7 +110,7 @@
       <url>https://maven.repository.redhat.com/ga</url>
     </pluginRepository>
     <pluginRepository>
-      <id>Red Hat EA repository</id>
+      <id>Red-Hat-EA-repository</id>
       <url>https://maven.repository.redhat.com/earlyaccess/all</url>
     </pluginRepository>
   </pluginRepositories>
