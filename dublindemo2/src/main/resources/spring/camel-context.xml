@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <!-- You could also define a traditional camel context here -->
+    <camelContext id="camelContext-095f1781-0cdc-40c7-bcb3-6c6be2603c31" xmlns="http://camel.apache.org/schema/spring">
+        <route id="_route1">
+            <from id="_from1" uri="timer://foo?period=1000"/>
+            <setHeader headerName="CamelHttpMethod" id="_setHeader1">
+                <simple>GET</simple>
+            </setHeader>
+            <to id="_to1" pattern="InOut" uri="netty4-http:http:hellofrompod:8080/demos/hello/pod"/>
+            <log id="_log1" message=">>>> ${body}"/>
+        </route>
+    </camelContext>
+</beans>
