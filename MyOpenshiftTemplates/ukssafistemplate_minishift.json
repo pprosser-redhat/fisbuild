@@ -1,0 +1,327 @@
+{
+    
+    "metadata" : {
+        "annotations" : {
+            "description" : "Spring-Boot and Camel QuickStart. This example demonstrates how you can use Apache Camel with Spring Boot on Openshift. The quickstart uses Spring Boot to configure a little application that includes a Camel route that triggeres a message every 5th second, and routes the message to a log. This template gives you the option to specific a nexus mirror repo",
+            "iconClass" : "icon-jboss",
+            "tags" : "quickstart,java,springboot,fis,uk,ssa",
+            "version" : "2.0"
+        },
+        "name": "s2i-spring-boot-camel-nexus"
+    },
+    
+    "objects" : [
+    {
+			"kind": "Service",
+			"apiVersion": "v1",
+			"metadata": {
+				"annotations": {
+					
+				},
+				"labels": {
+					"component": "${APP_NAME}",
+					"provider": "s2i",
+					"project": "${APP_NAME}",
+					"version": "${APP_VERSION}",
+					"group": "quickstarts"
+				},
+				"name": "${APP_NAME}"
+			},
+			"spec": {
+				"clusterIP": "None",
+				"deprecatedPublicIPs": [],
+				"ports": [
+					{
+						"port": 8080,
+						"protocol": "TCP",
+						"targetPort": 8080
+					}
+				],
+				"selector": {
+					"project": "${APP_NAME}",
+					"component": "${APP_NAME}",
+					"provider": "s2i",
+					"group": "quickstarts"
+				}
+			}
+		},
+        {
+            "apiVersion" : "v1",
+            "kind" : "ImageStream",
+            "metadata" : {
+                "labels" : {
+                    "component" : "${APP_NAME}",
+                    "group" : "quickstarts",
+                    "project" : "${APP_NAME}",
+                    "provider" : "s2i",
+                    "version" : "${APP_VERSION}"
+                },
+                "name" : "${APP_NAME}"
+            },
+            "spec" : {},
+            "status" : {"dockerImageRepository" : ""}
+        },
+        {
+            "apiVersion" : "v1",
+            "kind" : "BuildConfig",
+            "metadata" : {
+                "labels" : {
+                    "component" : "${APP_NAME}",
+                    "group" : "quickstarts",
+                    "project" : "${APP_NAME}",
+                    "provider" : "s2i",
+                    "version" : "${APP_VERSION}"
+                },
+                "name" : "${APP_NAME}"
+            },
+            "spec" : {
+                "output" : {"to" : {
+                    "kind" : "ImageStreamTag",
+                    "name" : "${APP_NAME}:latest"
+                }},
+                "resources" : {},
+                "source" : {
+                    "git" : {
+                        "ref" : "${GIT_REF}",
+                        "uri" : "${GIT_REPO}"
+                    },
+                    "contextDir": "${CONTEXT_DIR}",
+					"sourceSecret": {
+						"name": "${SOURCE_SECRET}"
+					},
+                    "type" : "Git"
+                },
+                "strategy" : {
+                    "sourceStrategy" : {
+                        "env" : [
+                            {
+                                "name" : "BUILD_LOGLEVEL",
+                                "value" : "5"
+                            },
+                            {
+                                "name" : "ARTIFACT_DIR",
+                                "value" : "${ARTIFACT_DIR}"
+                            },
+                            {
+                                "name" : "MAVEN_ARGS",
+                                "value" : "${MAVEN_ARGS}"
+                            },
+                            {
+                                "name" : "MAVEN_ARGS_APPEND",
+                                "value" : "${MAVEN_ARGS_APPEND}"
+                            },
+                            {
+                                "name" : "MAVEN_MIRROR_URL",
+                                "value" : "${MAVEN_MIRROR_URL}"
+                            }
+                        ],
+                        "forcePull" : true,
+                        "from" : {
+                            "kind" : "ImageStreamTag",
+                            "name" : "fis-java-openshift:${BUILDER_VERSION}",
+                            "namespace" : "${IMAGE_STREAM_NAMESPACE}"
+                        },
+                        "incremental" : true
+                    },
+                    "type" : "Source"
+                },
+                "triggers" : [
+                    {
+                        "github" : {"secret" : "${BUILD_SECRET}"},
+                        "type" : "GitHub"
+                    },
+                    {
+                        "generic" : {"secret" : "${BUILD_SECRET}"},
+                        "type" : "Generic"
+                    },
+                    {"type" : "ConfigChange"},
+                    {
+                        "imageChange" : {},
+                        "type" : "ImageChange"
+                    }
+                ]
+            },
+            "status" : {"lastVersion" : 0}
+        },
+        {
+            "apiVersion" : "v1",
+            "kind" : "DeploymentConfig",
+            "metadata" : {
+                "labels" : {
+                    "component" : "${APP_NAME}",
+                    "group" : "quickstarts",
+                    "project" : "${APP_NAME}",
+                    "provider" : "s2i",
+                    "version" : "${APP_VERSION}"
+                },
+                "name" : "${APP_NAME}"
+            },
+            "spec" : {
+                "replicas" : 2,
+                "selector" : {
+                    "component" : "${APP_NAME}",
+                    "deploymentconfig" : "${APP_NAME}",
+                    "group" : "quickstarts",
+                    "project" : "${APP_NAME}",
+                    "provider" : "s2i",
+                    "version" : "${APP_VERSION}"
+                },
+                "strategy" : {"resources" : {}},
+                "template" : {
+                    "metadata" : {"labels" : {
+                        "component" : "${APP_NAME}",
+                        "deploymentconfig" : "${APP_NAME}",
+                        "group" : "quickstarts",
+                        "project" : "${APP_NAME}",
+                        "provider" : "s2i",
+                        "version" : "${APP_VERSION}"
+                    }},
+                    "spec" : {"containers" : [{
+                        "env" : [{
+                            "name" : "KUBERNETES_NAMESPACE",
+                            "valueFrom" : {"fieldRef" : {"fieldPath" : "metadata.namespace"}}
+                        }],
+                        "image" : "library/${APP_NAME}:latest",
+                        "livenessProbe" : {
+                            "httpGet" : {
+                                "path" : "/health",
+                                "port" : 8081
+                            },
+                            "initialDelaySeconds" : 180
+                        },
+                        "name" : "${APP_NAME}",
+                        "ports" : [{
+                            "containerPort" : 8778,
+                            "name" : "jolokia"
+                        }],
+                        "readinessProbe" : {
+                            "httpGet" : {
+                                "path" : "/health",
+                                "port" : 8081
+                            },
+                            "initialDelaySeconds" : 10
+                        },
+                        "resources" : {
+                            "limits" : {"cpu" : "${CPU_LIMIT}"},
+                            "requests" : {"cpu" : "${CPU_REQUEST}"}
+                        }
+                    }]}
+                },
+                "triggers" : [
+                    {"type" : "ConfigChange"},
+                    {
+                        "imageChangeParams" : {
+                            "automatic" : true,
+                            "containerNames" : ["${APP_NAME}"],
+                            "from" : {
+                                "kind" : "ImageStreamTag",
+                                "name" : "${APP_NAME}:latest"
+                            }
+                        },
+                        "type" : "ImageChange"
+                    }
+                ]
+            },
+            "status" : {}
+        }
+    ],
+    "parameters" : [
+        {
+            "name" : "APP_NAME",
+            "displayName" : "Application Name",
+            "description" : "The name assigned to the application.",
+            "value" : "hellofrompod",
+            "required" : true
+        },
+        {
+            "name" : "GIT_REPO",
+            "displayName" : "Git Repository URL",
+            "description" : "The URL of the repository with your application source code.",
+            "value" : "http://192.168.99.99/phil/fisbuild.git",
+            "required" : true
+        },
+        {
+            "name" : "GIT_REF",
+            "displayName" : "Git Reference",
+            "description" : "Set this to a branch name, tag or other ref of your repository if you are not using the default branch.",
+            "value" : "master"
+        },
+        {
+			"description": "Path within Git project to build; empty for root project directory.",
+			"name": "CONTEXT_DIR",
+			"value": "/HelloFromPod",
+			"required": false
+		},
+		{
+			"name": "SOURCE_SECRET",
+			"value": "phil",
+			"displayName": "Secret to Allow access to GIT",
+			"description": "Enable basic authentication to GIT, ensure a secret has already been created"
+		},
+        {
+            "name" : "BUILDER_VERSION",
+            "displayName" : "Builder version",
+            "description" : "The version of the FIS S2I builder image to use.",
+            "value" : "2.0"
+        },
+        {
+            "name" : "APP_VERSION",
+            "displayName" : "Application Version",
+            "description" : "The application version.",
+            "value" : "1.0.0.redhat-000055"
+        },
+        {
+            "name" : "MAVEN_ARGS",
+            "displayName" : "Maven Arguments",
+            "description" : "Arguments passed to mvn in the build.",
+            "value" : "package -DskipTests -Dfabric8.skip -e -B"
+        },
+        {
+            "name" : "MAVEN_MIRROR_URL",
+            "displayName" : "Maven Mirror URL",
+            "description" : "Local Maven mirror can be entered to speed up build time",
+            "value" : "http://nexus-nexus.192.168.99.100.nip.io/nexus/content/groups/public/"
+        },
+        {
+            "name" : "MAVEN_ARGS_APPEND",
+            "displayName" : "Extra Maven Arguments",
+            "description" : "Extra arguments passed to mvn, e.g. for multi-module builds."
+        },
+        {
+            "name" : "ARTIFACT_DIR",
+            "displayName" : "Maven build directory",
+            "description" : "Directory of the artifact to be built, e.g. for multi-module builds."
+        },
+        {
+            "name" : "IMAGE_STREAM_NAMESPACE",
+            "displayName" : "Image Stream Namespace",
+            "description" : "Namespace in which the Fuse ImageStreams are installed. These ImageStreams are normally installed in the openshift namespace. You should only need to modify this if you've installed the ImageStreams in a different namespace/project.",
+            "value" : "openshift",
+            "required" : true
+        },
+        {
+            "name" : "BUILD_SECRET",
+            "displayName" : "Git Build Secret",
+            "description" : "The secret needed to trigger a build.",
+            "generate" : "expression",
+            "from" : "[a-zA-Z0-9]{40}"
+        },
+        {
+            "name" : "CPU_REQUEST",
+            "displayName" : "CPU request",
+            "description" : "The amount of CPU to requests.",
+            "value" : "0.2",
+            "required" : true
+        },
+        {
+            "name" : "CPU_LIMIT",
+            "displayName" : "CPU limit",
+            "description" : "The amount of CPU the container is limited to use.",
+            "value" : "1.0",
+            "required" : true
+        }
+    ],
+    "labels" : {"template" : "s2i-spring-boot-camel-nexus"},
+    "kind" : "Template",
+    "apiVersion" : "v1"
+}
