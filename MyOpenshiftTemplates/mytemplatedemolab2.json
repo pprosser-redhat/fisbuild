@@ -25,7 +25,7 @@
 			"name": "GIT_REPO",
 			"displayName": "Git Repository URL",
 			"required": true,
-			"value": "http://192.168.99.99/phil/fisbuild.git",
+			"value": "http://gogs-persistent.apps.demolab.local/Fuse_Integration_Services_Org/fisbuild.git",
 			"description": "The URL of the repository with your application source code."
 		},
 		{
@@ -65,7 +65,7 @@
 		},
 		{
 			"name": "MAVEN_MIRROR_URL",
-			"value": "http://nexus.nexus.svc.cluster.local:8081/nexus/content/groups/public/",
+			"value": "http://nexus2-sharedservicespersistent.apps.demolab.local/content/groups/public/",
 			"displayName": "Maven Mirror URL",
 			"description": "Speed up the build process with a Maven Mirror e.g. http://nexus.nexus.svc.cluster.local:8081/nexus/content/groups/public/"
 		},
