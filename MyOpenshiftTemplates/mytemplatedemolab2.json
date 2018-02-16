@@ -2,7 +2,7 @@
     "kind": "Template",
     "apiVersion": "v1",
     "metadata": {
-        "name": "s2i-spring-boot-camel-with-Nexus",
+        "name": "s2i-spring-boot-camel-with-nexus",
         "creationTimestamp": null,
         "annotations": {
             "description": "Spring-Boot and Camel template. Template gives the option to use internal maven repository",
