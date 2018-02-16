@@ -1,354 +1,325 @@
 {
-	"apiVersion": "v1",
-	"kind": "Template",
-	"metadata": {
-		"annotations": {
-			"description": "Fuse Integration Service Demo with Mirror Nexus Repo",
-			"tags": "demo,java,springboot,fis,jenkins",
-			"iconClass": "icon-jenkins",
-			"version": "2.0"
-		},
-		"name": "fis-demo-template"
-	},
-	"labels": {
-		"template": "fis-demo-template"
-	},
-	"parameters": [
-		{
-			"name": "APP_NAME",
-			"displayName": "Application Name",
-			"required": true,
-			"value": "hellofrompod",
-			"description": "The name assigned to the application."
-		},
-		{
-			"name": "GIT_REPO",
-			"displayName": "Git Repository URL",
-			"required": true,
-			"value": "http://gogs-persistent.apps.demolab.local/Fuse_Integration_Services_Org/fisbuild.git",
-			"description": "The URL of the repository with your application source code."
-		},
-		{
-			"description": "Path within Git project to build; empty for root project directory.",
-			"name": "CONTEXT_DIR",
-			"value": "/HelloFromPod",
-			"required": false
-		},
-		{
-			"name": "GIT_REF",
-			"displayName": "Git Reference",
-			"value": "master",
-			"description": "Set this to a branch name, tag or other ref of your repository if you are not using the default branch."
-		},
-		{
-			"name": "BUILDER_VERSION",
-			"displayName": "Builder version",
-			"value": "2.0",
-			"description": "The version of the FIS S2I builder image to use."
-		},
-		{
-			"name": "APP_VERSION",
-			"displayName": "Application Version",
-			"value": "1.0.0",
-			"description": "The application version."
-		},
-		{
-			"name": "MAVEN_ARGS",
-			"displayName": "Maven Arguments",
-			"value": "package -DskipTests -Dfabric8.skip -e -B",
-			"description": "Arguments passed to mvn in the build."
-		},
-		{
-			"name": "MAVEN_ARGS_APPEND",
-			"displayName": "Extra Maven Arguments",
-			"description": "Extra arguments passed to mvn, e.g. for multi-module builds."
-		},
-		{
-			"name": "MAVEN_MIRROR_URL",
-			"value": "http://nexus2-sharedservicespersistent.apps.demolab.local/content/groups/public/",
-			"displayName": "Maven Mirror URL",
-			"description": "Speed up the build process with a Maven Mirror e.g. http://nexus.nexus.svc.cluster.local:8081/nexus/content/groups/public/"
-		},
-		{
-			"name": "ARTIFACT_DIR",
-			"displayName": "Maven build directory",
-			"description": "Directory of the artifact to be built, e.g. for multi-module builds."
-		},
-		{
-			"name": "SOURCE_SECRET",
-			"value": "phil",
-			"displayName": "Secret to Allow access to GIT",
-			"description": "Enable basic authentication to GIT, ensure a secret has already been created"
-		},
-		{
-			"name": "IMAGE_STREAM_NAMESPACE",
-			"displayName": "Image Stream Namespace",
-			"value": "openshift",
-			"required": true,
-			"description": "Namespace in which the Fuse ImageStreams are installed. These ImageStreams are normally installed in the openshift namespace. You should only need to modify this if you've installed the ImageStreams in a different namespace/project."
-		},
-		{
-			"name": "BUILD_SECRET",
-			"displayName": "Git Build Secret",
-			"generate": "expression",
-			"description": "The secret needed to trigger a build.",
-			"from": "[a-zA-Z0-9]{40}"
-		}
-	],
-	"objects": [
-		{
-			"kind": "Service",
-			"apiVersion": "v1",
-			"metadata": {
-				"annotations": {
-					
-				},
-				"labels": {
-					"component": "${APP_NAME}",
-					"provider": "s2i",
-					"project": "${APP_NAME}",
-					"version": "${APP_VERSION}",
-					"group": "quickstarts"
-				},
-				"name": "${APP_NAME}"
-			},
-			"spec": {
-				"clusterIP": "None",
-				"deprecatedPublicIPs": [],
-				"ports": [
-					{
-						"port": 8080,
-						"protocol": "TCP",
-						"targetPort": 8080
-					}
-				],
-				"selector": {
-					"project": "${APP_NAME}",
-					"component": "${APP_NAME}",
-					"provider": "s2i",
-					"group": "quickstarts"
-				}
-			}
-		},
-		{
-			"kind": "ImageStream",
-			"apiVersion": "v1",
-			"metadata": {
-				"name": "${APP_NAME}",
-				"creationTimestamp": null,
-				"labels": {
-					"component": "${APP_NAME}",
-					"group": "quickstarts",
-					"project": "${APP_NAME}",
-					"provider": "s2i",
-					"version": "${APP_VERSION}"
-				}
-			},
-			"spec": {
-				
-				"tags": [
-				{
-				"name": "latest"
-				}
-				
-			 ]
-					
-			},
-			"status": {
-				"dockerImageRepository": ""
-			}
-		},
-		{
-			"kind": "BuildConfig",
-			"apiVersion": "v1",
-			"metadata": {
-				"name": "${APP_NAME}",
-				"creationTimestamp": null,
-				"labels": {
-					"component": "${APP_NAME}",
-					"group": "quickstarts",
-					"project": "${APP_NAME}",
-					"provider": "s2i",
-					"version": "${APP_VERSION}"
-				}
-			},
-			"spec": {
-				"source": {
-					"type": "Git",
-					"git": {
-						"uri": "${GIT_REPO}",
-						"ref": "${GIT_REF}"
-					},
-					"contextDir": "${CONTEXT_DIR}",
-					"sourceSecret": {
-						"name": "${SOURCE_SECRET}"
-					}
-				},
-				"strategy" : {
-                    "sourceStrategy" : {
-                        "env" : [
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "s2i-spring-boot-camel",
+        "creationTimestamp": null,
+        "annotations": {
+            "description": "Spring-Boot and Camel QuickStart. This example demonstrates how you can use Apache Camel with Spring Boot on Openshift. The quickstart uses Spring Boot to configure a little application that includes a Camel route that triggeres a message every 5th second, and routes the message to a log.",
+            "iconClass": "icon-jboss",
+            "tags": "quickstart,java,springboot,fis",
+            "version": "2.0"
+        }
+    },
+    "objects": [
+        {
+            "apiVersion": "v1",
+            "kind": "ImageStream",
+            "metadata": {
+                "creationTimestamp": null,
+                "labels": {
+                    "component": "${APP_NAME}",
+                    "group": "quickstarts",
+                    "project": "${APP_NAME}",
+                    "provider": "s2i",
+                    "version": "${APP_VERSION}"
+                },
+                "name": "${APP_NAME}"
+            },
+            "spec": {},
+            "status": {
+                "dockerImageRepository": ""
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "BuildConfig",
+            "metadata": {
+                "creationTimestamp": null,
+                "labels": {
+                    "component": "${APP_NAME}",
+                    "group": "quickstarts",
+                    "project": "${APP_NAME}",
+                    "provider": "s2i",
+                    "version": "${APP_VERSION}"
+                },
+                "name": "${APP_NAME}"
+            },
+            "spec": {
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "${APP_NAME}:latest"
+                    }
+                },
+                "resources": {},
+                "source": {
+                    "git": {
+                        "ref": "${GIT_REF}",
+                        "uri": "${GIT_REPO}"
+                    },
+                    "type": "Git",
+                    "contextDir": "${CONTEXT_DIR}"
+                },
+                "strategy": {
+                    "sourceStrategy": {
+                        "env": [
                             {
-                                "name" : "BUILD_LOGLEVEL",
-                                "value" : "5"
+                                "name": "BUILD_LOGLEVEL",
+                                "value": "5"
                             },
                             {
-                                "name" : "ARTIFACT_DIR",
-                                "value" : "${ARTIFACT_DIR}"
+                                "name": "ARTIFACT_DIR",
+                                "value": "${ARTIFACT_DIR}"
                             },
                             {
-                                "name" : "MAVEN_ARGS",
-                                "value" : "${MAVEN_ARGS}"
+                                "name": "MAVEN_ARGS",
+                                "value": "${MAVEN_ARGS}"
                             },
                             {
-                                "name" : "MAVEN_ARGS_APPEND",
-                                "value" : "${MAVEN_ARGS_APPEND}"
+                                "name": "MAVEN_ARGS_APPEND",
+                                "value": "${MAVEN_ARGS_APPEND}"
                             },
                             {
                                 "name" : "MAVEN_MIRROR_URL",
                                 "value" : "${MAVEN_MIRROR_URL}"
                             }
                         ],
-                        "forcePull" : true,
-                        "from" : {
-                            "kind" : "ImageStreamTag",
-                            "name" : "fis-java-openshift:${BUILDER_VERSION}",
-                            "namespace" : "${IMAGE_STREAM_NAMESPACE}"
+                        "forcePull": true,
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "fis-java-openshift:${BUILDER_VERSION}",
+                            "namespace": "${IMAGE_STREAM_NAMESPACE}"
                         },
-                        "incremental" : true
+                        "incremental": true
                     },
-                    "type" : "Source"
+                    "type": "Source"
                 },
-                "triggers" : [
+                "triggers": [
                     {
-                        "github" : {"secret" : "${BUILD_SECRET}"},
-                        "type" : "GitHub"
+                        "github": {
+                            "secret": "${BUILD_SECRET}"
+                        },
+                        "type": "GitHub"
                     },
                     {
-                        "generic" : {"secret" : "${BUILD_SECRET}"},
-                        "type" : "Generic"
+                        "generic": {
+                            "secret": "${BUILD_SECRET}"
+                        },
+                        "type": "Generic"
                     },
-                    {"type" : "ConfigChange"},
                     {
-                        "imageChange" : {},
-                        "type" : "ImageChange"
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "imageChange": {},
+                        "type": "ImageChange"
                     }
                 ]
             },
-            "status" : {"lastVersion" : 0}
+            "status": {
+                "lastVersion": 0
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "DeploymentConfig",
+            "metadata": {
+                "creationTimestamp": null,
+                "labels": {
+                    "component": "${APP_NAME}",
+                    "group": "quickstarts",
+                    "project": "${APP_NAME}",
+                    "provider": "s2i",
+                    "version": "${APP_VERSION}"
+                },
+                "name": "${APP_NAME}"
+            },
+            "spec": {
+                "replicas": 1,
+                "selector": {
+                    "component": "${APP_NAME}",
+                    "deploymentconfig": "${APP_NAME}",
+                    "group": "quickstarts",
+                    "project": "${APP_NAME}",
+                    "provider": "s2i",
+                    "version": "${APP_VERSION}"
+                },
+                "strategy": {
+                    "resources": {}
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "component": "${APP_NAME}",
+                            "deploymentconfig": "${APP_NAME}",
+                            "group": "quickstarts",
+                            "project": "${APP_NAME}",
+                            "provider": "s2i",
+                            "version": "${APP_VERSION}"
+                            }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "env": [
+                                    {
+                                        "name": "KUBERNETES_NAMESPACE",
+                                        "valueFrom": {
+                                            "fieldRef": {
+                                                "fieldPath": "metadata.namespace"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "image": "library/${APP_NAME}:latest",
+                                "livenessProbe": {
+                                    "httpGet": {
+                                        "path": "/health",
+                                        "port": 8081
+                                    },
+                                    "initialDelaySeconds": 180
+                                },
+                                "name": "${APP_NAME}",
+                                "ports": [
+                                    {
+                                        "containerPort": 8778,
+                                        "name": "jolokia"
+                                    }
+                                ],
+                                "readinessProbe": {
+                                    "httpGet": {
+                                        "path": "/health",
+                                        "port": 8081
+                                    },
+                                    "initialDelaySeconds": 10
+                                },
+                                "resources": {
+                                    "limits": {
+                                        "cpu": "${CPU_LIMIT}"
+                                    },
+                                    "requests": {
+                                        "cpu": "${CPU_REQUEST}"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                "triggers": [
+                    {
+                        "type": "ConfigChange"
+                        },
+                    {
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "${APP_NAME}"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "${APP_NAME}:latest"
+                            }
+                        },
+                        "type": "ImageChange"
+                    }
+                ]
+            },
+            "status": {}
+        }
+    ],
+    "parameters": [
+        {
+            "name": "APP_NAME",
+            "displayName": "Application Name",
+            "description": "The name assigned to the application.",
+            "value": "hellofrompod",
+            "required": true
+        },
+        {
+            "name": "GIT_REPO",
+            "displayName": "Git Repository URL",
+            "description": "The URL of the repository with your application source code.",
+            "value": "http://gogs-persistent.apps.demolab.local/Fuse_Integration_Services_Org/fisbuild.git",
+            "required": true
+        },
+        {
+            "name": "GIT_REF",
+            "displayName": "Git Reference",
+            "description": "Set this to a branch name, tag or other ref of your repository if you are not using the default branch.",
+            "value": "master"
+        },
+        {
+			"description": "Path within Git project to build; empty for root project directory.",
+			"name": "CONTEXT_DIR",
+			"value": "/HelloFromPod",
+			"required": false
 		},
-		{
-			"kind": "DeploymentConfig",
-			"apiVersion": "v1",
-			"metadata": {
-				"name": "${APP_NAME}",
-				"creationTimestamp": null,
-				"labels": {
-					"component": "${APP_NAME}",
-					"group": "quickstarts",
-					"project": "${APP_NAME}",
-					"provider": "s2i",
-					"version": "${APP_VERSION}"
-				}
-			},
-			"spec": {
-				"strategy": {
-					"resources": {
-						
-					}
-				},
-				"triggers": [
-					{
-						"type": "ConfigChange"
-					},
-					{
-						"type": "ImageChange",
-						"imageChangeParams": {
-							"automatic": true,
-							"containerNames": [
-								"${APP_NAME}"
-							],
-							"from": {
-								"kind": "ImageStreamTag",
-								"name": "${APP_NAME}:latest"
-							}
-						}
-					}
-				],
-				"replicas": 2,
-				"selector": {
-					"component": "${APP_NAME}",
-					"deploymentconfig": "${APP_NAME}",
-					"group": "quickstarts",
-					"project": "${APP_NAME}",
-					"provider": "s2i",
-					"version": "${APP_VERSION}"
-				},
-				"template": {
-					"metadata": {
-						"creationTimestamp": null,
-						"labels": {
-							"component": "${APP_NAME}",
-							"deploymentconfig": "${APP_NAME}",
-							"group": "quickstarts",
-							"project": "${APP_NAME}",
-							"provider": "s2i",
-							"version": "${APP_VERSION}"
-						}
-					},
-					"spec": {
-						"containers": [
-							{
-								"name": "${APP_NAME}",
-								"image": "library/${APP_NAME}:latest",
-								"readinessProbe": {
-									"httpGet": {
-										"path": "/health",
-										"port": 8081
-									},
-									"initialDelaySeconds": 10
-								},
-								"livenessProbe": {
-									"httpGet": {
-										"path": "/health",
-										"port": 8081
-									},
-									"initialDelaySeconds": 180
-								},
-								"ports": [
-									{
-										"containerPort": 8778,
-										"name": "jolokia"
-									},
-									{
-										"containerPort": 8080,
-										"name": "tcp"
-									},
-									{
-										"containerPort": 9779,
-										"name": "prometheus"
-									}
-								],
-								"env": [
-									{
-										"name": "KUBERNETES_NAMESPACE",
-										"valueFrom": {
-											"fieldRef": {
-												"fieldPath": "metadata.namespace"
-											}
-										}
-									}
-								],
-								"resources": {
-									
-								}
-							}
-						]
-					}
-				}
-			},
-			"status": {
-				
-			}
-		}
-	]
+        {
+            "name": "BUILDER_VERSION",
+            "displayName": "Builder version",
+            "description": "The version of the FIS S2I builder image to use.",
+            "value": "2.0"
+        },
+        {
+            "name": "APP_VERSION",
+            "displayName": "Application Version",
+            "description": "The application version.",
+            "value": "1.0.0.redhat-000064"
+        },
+        {
+            "name": "MAVEN_MIRROR_URL",
+            "displayName": "Maven Mirror URL",
+            "description": "Point to an internal Maven server such as Nexus",
+            "value": "http://nexus2-sharedservicespersistent.apps.demolab.local/content/groups/public/"
+        },
+        {
+            "name": "MAVEN_ARGS",
+            "displayName": "Maven Arguments",
+            "description": "Arguments passed to mvn in the build.",
+            "value": "package -DskipTests -Dfabric8.skip -e -B"
+        },
+        {
+            "name": "MAVEN_ARGS_APPEND",
+            "displayName": "Extra Maven Arguments",
+            "description": "Extra arguments passed to mvn, e.g. for multi-module builds."
+        },
+        {
+            "name": "ARTIFACT_DIR",
+            "displayName": "Maven build directory",
+            "description": "Directory of the artifact to be built, e.g. for multi-module builds."
+        },
+        {
+            "name": "IMAGE_STREAM_NAMESPACE",
+            "displayName": "Image Stream Namespace",
+            "description": "Namespace in which the Fuse ImageStreams are installed. These ImageStreams are normally installed in the openshift namespace. You should only need to modify this if you've installed the ImageStreams in a different namespace/project.",
+            "value": "openshift",
+            "required": true
+        },
+        {
+            "name": "BUILD_SECRET",
+            "displayName": "Git Build Secret",
+            "description": "The secret needed to trigger a build.",
+            "generate": "expression",
+            "from": "[a-zA-Z0-9]{40}"
+        },
+        {
+            "name": "CPU_REQUEST",
+            "displayName": "CPU request",
+            "description": "The amount of CPU to requests.",
+            "value": "0.2",
+            "required": true
+        },
+        {
+            "name": "CPU_LIMIT",
+            "displayName": "CPU limit",
+            "description": "The amount of CPU the container is limited to use.",
+            "value": "1.0",
+            "required": true
+        }
+    ],
+    "labels": {
+        "template": "s2i-spring-boot-camel"
+    }
 }
