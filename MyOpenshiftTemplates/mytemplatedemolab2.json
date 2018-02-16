@@ -145,9 +145,14 @@
 				}
 			},
 			"spec": {
-				"tags": {
+				
+				"tags": [
+				{
 				"name": "latest"
-				}	
+				}
+				
+			 ]
+					
 			},
 			"status": {
 				"dockerImageRepository": ""
