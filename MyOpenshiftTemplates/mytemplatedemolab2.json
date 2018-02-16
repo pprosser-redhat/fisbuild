@@ -2,12 +2,12 @@
     "kind": "Template",
     "apiVersion": "v1",
     "metadata": {
-        "name": "s2i-spring-boot-camel",
+        "name": "s2i-spring-boot-camel-with-Nexus",
         "creationTimestamp": null,
         "annotations": {
-            "description": "Spring-Boot and Camel QuickStart. This example demonstrates how you can use Apache Camel with Spring Boot on Openshift. The quickstart uses Spring Boot to configure a little application that includes a Camel route that triggeres a message every 5th second, and routes the message to a log.",
+            "description": "Spring-Boot and Camel template. Template gives the option to use internal maven repository",
             "iconClass": "icon-jboss",
-            "tags": "quickstart,java,springboot,fis",
+            "tags": "quickstart,java,springboot,fis, nexus",
             "version": "2.0"
         }
     },
