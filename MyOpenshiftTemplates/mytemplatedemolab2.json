@@ -136,7 +136,7 @@
                 "name": "${APP_NAME}"
             },
             "spec": {
-                "replicas": 1,
+                "replicas": 2,
                 "selector": {
                     "component": "${APP_NAME}",
                     "deploymentconfig": "${APP_NAME}",
