@@ -8,7 +8,7 @@
             <setHeader headerName="CamelHttpMethod" id="_setHeader1">
                 <simple>GET</simple>
             </setHeader>
-            <to id="_to1" pattern="InOut" uri="netty4-http:http:http://hellofrompod.apps.demolab.local:8080/demos/hello/pod"/>
+            <to id="_to1" pattern="InOut" uri="netty4-http:http:http://hellofrompod.apps.demolab.local:80/demos/hello/pod"/>
             <log id="_log1" message=">>>> ${body}"/>
         </route>
     </camelContext>
