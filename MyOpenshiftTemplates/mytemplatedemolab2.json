@@ -46,6 +46,51 @@
 				}
 			}
 		},
+		{
+    "kind": "Route",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "hellofrompod",
+        "creationTimestamp": null,
+        "labels": {
+            "app": "s2i-spring-boot-camel-with-nexus",
+            "component": "hellofrompod",
+            "group": "quickstarts",
+            "project": "hellofrompod",
+            "provider": "s2i",
+            "template": "s2i-spring-boot-camel",
+            "version": "1.0.0.redhat-000064"
+        },
+        "annotations": {
+            "haproxy.router.openshift.io/balance": "roundrobin"
+        }
+    },
+    "spec": {
+        "host": "hellofrompod.apps.demolab.local",
+        "to": {
+            "kind": "Service",
+            "name": "hellofrompod",
+            "weight": 100
+        },
+        "wildcardPolicy": "None"
+    },
+    "status": {
+        "ingress": [
+            {
+                "host": "hellofrompod.apps.demolab.local",
+                "routerName": "router",
+                "conditions": [
+                    {
+                        "type": "Admitted",
+                        "status": "True",
+                        "lastTransitionTime": "2018-02-19T15:41:37Z"
+                    }
+                ],
+                "wildcardPolicy": "None"
+            }
+        ]
+    }
+},
         {
             "apiVersion": "v1",
             "kind": "ImageStream",
