@@ -25,7 +25,7 @@
             <bean beanType="fis.HelloFromPod.Hello" cache="false"
                 id="GetMessage" method="getMessage"/>
             <setBody id="_setBody1">
-                <simple>${body}</simple>
+                <simple> ${body}</simple>
             </setBody>
             <log id="route-log" message=">>> ${body}"/>
         </route>
