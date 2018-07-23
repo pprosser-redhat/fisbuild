@@ -66,7 +66,7 @@
         }
     },
     "spec": {
-        "host": "hellofrompod.apps.demolab.local",
+        "host": "hellofrompod.apps.penryn.demolab.local",
         "to": {
             "kind": "Service",
             "name": "hellofrompod",
@@ -77,7 +77,7 @@
     "status": {
         "ingress": [
             {
-                "host": "hellofrompod.apps.demolab.local",
+                "host": "hellofrompod.apps.penryn.demolab.local",
                 "routerName": "router",
                 "conditions": [
                     {
