@@ -321,7 +321,7 @@
             "name": "GIT_REPO",
             "displayName": "Git Repository URL",
             "description": "The URL of the repository with your application source code.",
-            "value": "http://gogs-persistent.apps.demolab.local/Fuse_Integration_Services_Org/fisbuild.git",
+            "value": "https://github.com/pprosser-redhat/fisbuild.git",
             "required": true
         },
         {
@@ -352,7 +352,7 @@
             "name": "MAVEN_MIRROR_URL",
             "displayName": "Maven Mirror URL",
             "description": "Point to an internal Maven server such as Nexus",
-            "value": "http://nexus2-sharedservicespersistent.apps.demolab.local/content/groups/public/"
+            "value": "http://nexus-sharedservices.apps.penryn.demolab.local/repository/maven-all-public/"
         },
         {
             "name": "MAVEN_ARGS",
