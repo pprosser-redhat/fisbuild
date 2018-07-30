@@ -213,7 +213,8 @@
                     "group": "quickstarts",
                     "project": "${APP_NAME}",
                     "provider": "s2i",
-                    "version": "${APP_VERSION}"
+                    "version": "${APP_VERSION}",
+                    "app": "${APP_NAME}"
                 },
                 "name": "${APP_NAME}"
             },
