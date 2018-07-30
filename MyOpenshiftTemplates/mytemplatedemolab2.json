@@ -323,7 +323,7 @@
             "name": "GIT_REPO",
             "displayName": "Git Repository URL",
             "description": "The URL of the repository with your application source code.",
-            "value": "https://github.com/pprosser-redhat/fisbuild.git",
+            "value": "http://gogs-persistent.apps.penryn.demolab.local/pprosser/fisbuild.git",
             "required": true
         },
         {
