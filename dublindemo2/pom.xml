@@ -7,12 +7,26 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>Fabric8 :: Quickstarts :: Spring-Boot :: Camel</name>
   <description>Spring Boot example running a Camel route</description>
-  <properties>
+  <!--  <properties>
     <spring-boot.version>1.4.1.RELEASE</spring-boot.version>
     <fabric8.version>2.2.170.redhat-000022</fabric8.version>
     <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-    <fabric8.maven.plugin.version>3.1.80.redhat-000022</fabric8.maven.plugin.version>
+    <fabric8.maven.plugin.version>3.5.33.fuse-000067-redhat-1</fabric8.maven.plugin.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
+  </properties> -->
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- configure the versions you want to use here -->
+    <fuse.version>7.0.0.fuse-000191-redhat-1</fuse.version>
+    <bom.version>7.0.0.fuse-000027-redhat-1</bom.version>
+    <fabric8.version>3.0.11.fuse-000039-redhat-1</fabric8.version>
+    <spring-boot.version>1.5.12.RELEASE</spring-boot.version>
+
+    <!-- maven plugin versions -->
+    <fabric8.maven.plugin.version>3.5.33.fuse-000067-redhat-1</fabric8.maven.plugin.version>
+    <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
   </properties>
   <dependencyManagement>

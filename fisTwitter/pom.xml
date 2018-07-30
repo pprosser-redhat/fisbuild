@@ -84,6 +84,12 @@
       <artifactId>fabric8-arquillian</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-salesforce</artifactId>
+    
+    <!-- use the same version as your Camel core version -->
+</dependency>
   </dependencies>
 
   <build>

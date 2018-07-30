@@ -5,8 +5,10 @@
         "name": "s2i-spring-boot-camel-with-nexus",
         "creationTimestamp": null,
         "annotations": {
+        	"openshift.io/display-name": "Red Hat Fuse 7.0 Camel XML DSL with Spring Boot",
+      		"openshift.io/provider-display-name": "Red Hat, Inc.",
             "description": "Spring-Boot and Camel template. Template gives the option to use internal maven repository",
-            "iconClass": "icon-jboss",
+            "iconClass": "icon-rh-integration",
             "tags": "quickstart,java,springboot,fis, nexus",
             "version": "2.0"
         }
@@ -167,7 +169,7 @@
                         "forcePull": true,
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "fis-java-openshift:${BUILDER_VERSION}",
+                            "name": "jboss-fuse70-java-openshift:${BUILDER_VERSION}",
                             "namespace": "${IMAGE_STREAM_NAMESPACE}"
                         },
                         "incremental": true
@@ -340,13 +342,13 @@
             "name": "BUILDER_VERSION",
             "displayName": "Builder version",
             "description": "The version of the FIS S2I builder image to use.",
-            "value": "2.0"
+            "value": "1.0"
         },
         {
             "name": "APP_VERSION",
             "displayName": "Application Version",
             "description": "The application version.",
-            "value": "1.0.0.redhat-000064"
+            "value": "1.0.0.fuse-000154-redhat-5"
         },
         {
             "name": "MAVEN_MIRROR_URL",
