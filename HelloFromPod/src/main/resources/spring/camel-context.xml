@@ -14,8 +14,9 @@
     <!--  <bean class="fis.HelloFromPod.Hello" id="helloMessage"/> -->
     <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
         <endpoint id="transform" uri="dozer:transform?sourceModel=java.lang.String&amp;targetModel=fis.HelloFromPod.Hello&amp;mappingFile=transformation.xml"/>
-        <rest path="/hello">
-            <get outType="com.redhat.myfispipeline.Accounts" uri="pod">
+        <rest id="rest-d2337636-bad1-4548-8444-e5df9345f855" path="/hello">
+            <get id="get-c07dc7a3-e6a4-4700-99b8-e63c05c9c4cb"
+                outType="com.redhat.myfispipeline.Accounts" uri="pod">
                 <to uri="direct:hello"/>
             </get>
         </rest>
@@ -25,7 +26,7 @@
             <bean beanType="fis.HelloFromPod.Hello" cache="false"
                 id="GetMessage" method="getMessage"/>
             <setBody id="_setBody1">
-                <simple>Telford ${body}</simple>
+                <simple>${body}</simple>
             </setBody>
             <log id="route-log" message=">>> ${body}"/>
         </route>
