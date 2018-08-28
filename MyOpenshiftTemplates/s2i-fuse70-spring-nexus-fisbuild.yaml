@@ -52,6 +52,7 @@ objects:
       requests:
         memory: ${BUILD_MEMORY_REQUEST}
     source:
+      contextDir: ${CONTEXT_DIR}
       git:
         ref: ${GIT_REF}
         uri: ${GIT_REPO}
@@ -100,7 +101,7 @@ objects:
       version: ${APP_VERSION}
     name: ${APP_NAME}
   spec:
-    replicas: 1
+    replicas: 2
     selector:
       app: ${APP_NAME}
       component: ${APP_NAME}
@@ -158,6 +159,61 @@ objects:
           name: ${APP_NAME}:latest
       type: ImageChange
   status: {}
+- apiVersion: v1
+  kind: Service
+  metadata: 
+    annotations:
+    labels: 
+      component: ${APP_NAME}
+      provider: s2i
+      project: ${APP_NAME}
+      version: ${APP_VERSION}
+      group: quickstarts
+    name: ${APP_NAME}
+  spec: 
+    clusterIP: None
+    deprecatedPublicIPs: 
+    ports: 
+      - port: 8080
+        protocol: TCP
+        targetPort: 8080
+    selector: 
+      component: ${APP_NAME}
+      provider: s2i
+      group: quickstarts
+      version: ${APP_VERSION}
+    sessionAffinity: None
+    type: ClusterIP
+    status:
+      loadBalancer: {}
+- apiVersion: route.openshift.io/v1    
+  kind: Route
+  metadata: 
+    annotations:
+        haproxy.router.openshift.io/balance: roundrobin
+    name: ${APP_NAME}
+    creationTimestamp: null
+    labels: 
+      app: ${APP_NAME}
+      component: ${APP_NAME}
+      group: quickstarts
+      version: ${APP_VERSION}
+  spec:
+    host: ${APP_NAME}.apps.penryn.demolab.local
+    to:
+      kind: Service
+      name: ${APP_NAME}
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+      - conditions:
+          - lastTransitionTime: '2018-08-24T14:24:14Z'
+            status: 'True'
+            type: Admitted
+        host: ${APP_NAME}.apps.penryn.demolab.local
+        routerName: router
+        wildcardPolicy: None
 parameters:
 - description: The name assigned to the application.
   displayName: Application Name
