@@ -12,7 +12,7 @@
         <property name="urlMappings" value="/demos/*"/>
     </bean>
     <!--  <bean class="fis.HelloFromPod.Hello" id="helloMessage"/> -->
-    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+    <camelContext id="HelloFromPod" xmlns="http://camel.apache.org/schema/spring">
         <endpoint id="transform" uri="dozer:transform?sourceModel=java.lang.String&amp;targetModel=fis.HelloFromPod.Hello&amp;mappingFile=transformation.xml"/>
         <rest id="rest-d2337636-bad1-4548-8444-e5df9345f855" path="/hello">
             <get id="get-c07dc7a3-e6a4-4700-99b8-e63c05c9c4cb"
@@ -20,7 +20,7 @@
                 <to uri="direct:hello"/>
             </get>
         </rest>
-        <route id="hello-pods">
+        <route id="hello-pods-route">
             <from id="Hello" uri="direct:hello"/>
             <convertBodyTo id="_convertBodyTo1" type="String"/>
             <bean beanType="fis.HelloFromPod.Hello" cache="false"
