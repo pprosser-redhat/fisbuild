@@ -269,6 +269,10 @@
                                     {
                                         "containerPort": 8778,
                                         "name": "jolokia"
+                                    },
+                                    {
+                                        "containerPort": 9779,
+                                        "name": "prometheus"
                                     }
                                 ],
                                 "readinessProbe": {
