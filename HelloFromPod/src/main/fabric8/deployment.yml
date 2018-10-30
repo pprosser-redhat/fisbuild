@@ -6,7 +6,15 @@ spec:
           resources:
             requests:
               cpu: "0.2"
-#              memory: 256Mi
+              memory: 256Mi
             limits:
               cpu: "1.0"
-#              memory: 256Mi
+              memory: 256Mi
+          env:
+          - name: AB_PROMETHEUS_HOST
+            value: 0.0.0.0
+          - name: AB_PROMETHEUS_PORT
+            value: 9779
+          - name: AB_JMX_EXPORTER_CONFIG
+            value: /opt/prometheus/prometheus-config.yml
+            
