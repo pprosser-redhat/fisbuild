@@ -2,14 +2,25 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
     <!-- You could also define a traditional camel context here -->
-    <camelContext id="dublindemo2" xmlns="http://camel.apache.org/schema/spring">
-        <route id="pingHello">
-            <from id="_from1" uri="timer://foo?period=1000"/>
+    <camelContext errorHandlerRef="defaulthandler" id="dublindemo2" xmlns="http://camel.apache.org/schema/spring">
+        <errorHandler id="defaulthandler" type="DefaultErrorHandler">
+        </errorHandler>
+        <errorHandler deadLetterUri="direct:handleError" id="dlqhandler"
+             type="DeadLetterChannel">
+            <redeliveryPolicy backOffMultiplier="2"
+                maximumRedeliveries="10" redeliveryDelay="5000" maximumRedeliveryDelay="30000" logExhausted="true" logContinued="true" useExponentialBackOff="true" retryAttemptedLogLevel="WARN" retriesExhaustedLogLevel="WARN" />
+        </errorHandler>
+        <route errorHandlerRef="dlqhandler" id="pingHello">
+            <from id="_from1" uri="timer://foo?period=3000"/>
             <setHeader headerName="CamelHttpMethod" id="_setHeader1">
                 <simple>GET</simple>
             </setHeader>
-            <to id="_to1" pattern="InOut" uri="netty4-http:http://hellofrompod.apps.penryn.demolab.local:80/demos/hello/pod"/>
+            <to id="_to1" pattern="InOut" uri="netty4-http:http:{{hello.host}}:80/demos/hello/pod"/>
             <log id="_log1" message=">>>> ${body}"/>
+        </route>
+        <route id="DLQErrorHandler">
+            <from id="_from2" uri="direct:handleError"/>
+            <log id="_log2" message="Whoops, it went really wrong for this message..... ${body}"/>
         </route>
     </camelContext>
 </beans>
