@@ -3,15 +3,30 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
     <!-- You could also define a traditional camel context here -->
     <camelContext errorHandlerRef="defaulthandler" id="dublindemo2" xmlns="http://camel.apache.org/schema/spring">
-        <errorHandler id="defaulthandler" type="DefaultErrorHandler">
-        </errorHandler>
-        <errorHandler deadLetterUri="direct:handleError" id="dlqhandler"
-             type="DeadLetterChannel">
-            <redeliveryPolicy backOffMultiplier="2"
-                maximumRedeliveries="10" redeliveryDelay="5000" maximumRedeliveryDelay="30000" logExhausted="true" logContinued="true" useExponentialBackOff="true" retryAttemptedLogLevel="WARN" retriesExhaustedLogLevel="WARN" />
+        <errorHandler id="defaulthandler" type="DefaultErrorHandler"/>
+        <errorHandler deadLetterUri="direct:handleError" id="dlqhandler" type="DeadLetterChannel">
+            <redeliveryPolicy backOffMultiplier="2" logContinued="true"
+                logExhausted="true" maximumRedeliveries="10"
+                maximumRedeliveryDelay="30000" redeliveryDelay="5000"
+                retriesExhaustedLogLevel="WARN"
+                retryAttemptedLogLevel="WARN" useExponentialBackOff="true"/>
         </errorHandler>
         <route errorHandlerRef="dlqhandler" id="pingHello">
-            <from id="_from1" uri="timer://foo?period=3000"/>
+            <from id="_from1" uri="timer://foo?period=1000"/>
+            <onException id="helloException">
+                <exception>org.apache.camel.component.netty4.http.NettyHttpOperationFailedException</exception>
+                <exception>java.io.IOException</exception>
+                <redeliveryPolicy backOffMultiplier="2"
+                    maximumRedeliveries="5"
+                    maximumRedeliveryDelay="30000"
+                    redeliveryDelay="5000"
+                    retriesExhaustedLogLevel="WARN"
+                    retryAttemptedLogLevel="WARN" useExponentialBackOff="true"/>
+                <handled>
+                    <constant>true</constant>
+                </handled>
+                <to id="handlingException" uri="direct:handleError"/>
+            </onException>
             <setHeader headerName="CamelHttpMethod" id="_setHeader1">
                 <simple>GET</simple>
             </setHeader>
